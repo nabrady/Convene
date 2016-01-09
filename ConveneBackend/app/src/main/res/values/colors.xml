@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="bottomBar">#000099</color>
+    <color name="white">#ffffff</color>
+    <color name="conveneRed">#ea2700</color>
+    <color name="conveneRedLight">#A9ff0000</color>
+    <color name="conveneBlue">#045ddf</color>
+    <color name="progressBarRed">#A9ff0000</color>
+
+    <color name="colorPrimary">#92ff1800</color>
+    <color name="fragBackgroundColor">#eeeeee</color>
+    <color name="colorPrimaryDark">#92ff1800</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="windowBackground">#FFFFFF</color>
+    <color name="navigationBarColor">#000000</color>
+    <color name="colorAccent">#9cc0fc</color>
+    <color name="notifcationColor">#555555</color>
+    <color name="actionBar">#9cc0fc</color>
 </resources>

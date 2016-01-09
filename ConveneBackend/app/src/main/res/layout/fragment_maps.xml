@@ -1,0 +1,34 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/map"
+            tools:context=".fragments.mapsFragment"
+            android:name="com.google.android.gms.maps.MapView" />
+        <TextView
+            android:id="@+id/bottomBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="-16dp"
+            android:paddingBottom="50dp"
+            android:textSize="7sp"
+            android:background="@color/conveneRedLight" />
+    </RelativeLayout>
+
+</LinearLayout>
+
+    <!--The easiest way is simply to pay attention to the order
+    in which the Views are added to your XML file. Lower down in
+    the file means higher up in the Z-axis.-->

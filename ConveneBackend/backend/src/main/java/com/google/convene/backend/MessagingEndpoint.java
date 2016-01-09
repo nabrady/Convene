@@ -46,7 +46,7 @@ public class MessagingEndpoint {
     /**
      * Api Keys can be obtained from the google cloud console
      */
-    private static final String API_KEY = System.getProperty("gcm.api.key");
+    private static final String API_KEY = System.getProperty("GoogleAPIs.api.key");
     private String friend_fb_id;
     private double latitude;
     private double longitude;
