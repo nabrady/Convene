@@ -46,14 +46,17 @@ public class SendNotification extends AsyncTask<Void, Void, String>{
 
         //String msg = "";
         try {
-            //msg = "Notification from Sample Application";
+            //msg = "NotificationItem from Sample Application";
             notifyService.sendFriendId(friendId).execute();
-            //notifyService.sendLatitude(latitude).execute();
-            //notifyService.sendLongitude(longitude).execute();
+            notifyService.sendLatitude(latitude).execute();
+            notifyService.sendLongitude(longitude).execute();
+
             //friendRecord=notifyService.findRecord(friendId).execute();
             //notifyService.sendLatitude(latitude).execute();
             //notifyService.sendLongitude(longitude).execute();
+
             notifyService.send(message,senderId).execute();
+
 
         } catch (IOException ex) {
             ex.printStackTrace();

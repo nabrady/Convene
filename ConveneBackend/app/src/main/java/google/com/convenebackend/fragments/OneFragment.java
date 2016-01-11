@@ -32,17 +32,19 @@ import com.facebook.login.widget.LoginButton;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import google.com.convenebackend.MainApp.People;
 import google.com.convenebackend.MainApp.UserUtils;
+import google.com.convenebackend.MainApp.myAdapter;
 import google.com.convenebackend.R;
-import google.com.convenebackend.facebook.RoundImage;
 import google.com.convenebackend.facebook.FbProfileInfo;
 
 
 public class OneFragment extends Fragment {
-    UserUtils utils;
+
+    private static UserUtils utils;
 
     private static String friendToMeet;
-    public static ArrayList friendListArray = new ArrayList();
+    public static ArrayList<Object> friendListArray = utils.getFriendList();
     private RelativeLayout userInfo;
     private ListView lvFriend;
     private LoginButton loginButton;
@@ -50,9 +52,9 @@ public class OneFragment extends Fragment {
     private LinearLayout backButtons;
     private ImageView profileImage, logo;
     private TextView info, orText, userName;
-    public static ArrayAdapter adapter;
     private View view;
     private AccessTokenTracker accessTokenTracker;
+    public static myAdapter newadapter;
 
     // The CallbackManager is used to manage the callbacks used in the app.
     private CallbackManager callbackManager;
@@ -103,6 +105,7 @@ public class OneFragment extends Fragment {
         //get user permission to access to friends list
         loginButton.setReadPermissions(Arrays.asList("user_friends"));
         loginButton.setFragment(this);
+
         //create a callback to handle the results of the login attempts and
         // register it with the CallbackManager
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -124,23 +127,27 @@ public class OneFragment extends Fragment {
 
         friendListArray.clear();
         //NOTE: simple list item 1 = Android predefined TextView resource id
-        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, friendListArray);
-        lvFriend.setAdapter(adapter);
+        //adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, friendListArray);
+
+        newadapter = new myAdapter(getContext(),
+                R.layout.list_row, friendListArray);
+
+        lvFriend.setAdapter(newadapter);
 
         lvFriend.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent,
                                     View view, int position, long id) {
                 int friendListID = (int) id;
-                friendToMeet = (lvFriend.getItemAtPosition(friendListID).toString());
+                newadapter.setSelectedIndex(position);
+                People person = (People)lvFriend.getItemAtPosition(friendListID);
+                utils.setFriend(person.name);
             }
         });
 
         Profile profile = Profile.getCurrentProfile();
         if (profile == null) {
-            //profileImage.setBackgroundResource(R.mipmap.default_profile);
-            //friendListArray.clear();
-            //adapter.notifyDataSetChanged();
+            //
         } else {
             FbProfileInfo FBInfo = new FbProfileInfo(getActivity());
             FBInfo.getProfileInformation(getActivity());
@@ -179,7 +186,7 @@ public class OneFragment extends Fragment {
         if (utils.getProfilePic() != null) {
             profileImage.setBackground(utils.getProfilePic());
         } else {
-            profileImage.setBackgroundResource(R.mipmap.default_profile);
+            profileImage.setBackgroundResource(R.mipmap.fb_logo);
         }
         profileImage.setVisibility(View.VISIBLE);
         userInfo.setVisibility(View.VISIBLE);

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,7 +28,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import google.com.convenebackend.GoogleAPIs.GcmRegistrationAsyncTask;
+import google.com.convenebackend.MainApp.People;
 import google.com.convenebackend.MainApp.UserUtils;
+import google.com.convenebackend.MainApp.myAdapter;
 import google.com.convenebackend.R;
 import google.com.convenebackend.fragments.OneFragment;
 
@@ -41,11 +43,13 @@ public class FbProfileInfo {
     private String userId = utils.getUserID();
 
     private ArrayList friendListArray = utils.getFriendList();
-    private ArrayAdapter adapter;
+
+    private ArrayList<People> friendList = new ArrayList<>();
 
     private Map<String, Object> friendMap = new HashMap<String, Object>();
 
     protected FragmentActivity activityContext;
+
     //add a constructor with the Context of your activity
     public FbProfileInfo(FragmentActivity _context){
         activityContext = _context;
@@ -63,13 +67,23 @@ public class FbProfileInfo {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         try {
-                            utils.setUserName(response.getJSONObject().getString("name").toString());
-                            utils.setUserID(response.getJSONObject().getString("id").toString());
+                            if(response.getJSONObject()!=null){
+                                utils.setUserName(response.getJSONObject().getString("name").toString());
+                                utils.setUserID(response.getJSONObject().getString("id").toString());
 
-                            TextView userNameDisplay = (TextView) activityContext.findViewById(R.id.userName);
-                            name = utils.getUserName();
-                            userNameDisplay.setText(name);
-                            userNameDisplay.setVisibility(View.VISIBLE);
+                                TextView userNameDisplay = (TextView) activityContext.findViewById(R.id.userName);
+                                name = utils.getUserName();
+                                userNameDisplay.setText(name);
+                                userNameDisplay.setVisibility(View.VISIBLE);
+                            }
+
+
+                            new GcmRegistrationAsyncTask(activityContext, utils.getUserID(), utils.getUserLatitude(),
+                                    utils.getUserLongitude()).execute();
+
+                            //friendMap.
+
+                            //TODO delete or replace old reg deets
 
                             JSONObject data = response.getJSONObject().getJSONObject("picture").getJSONObject("data");
                             String url = data.getString("url");
@@ -93,7 +107,7 @@ public class FbProfileInfo {
                 });
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "id, name, picture.type(normal)");
+        parameters.putString("fields", "id, name, picture.type(small)");
         meRequest.setParameters(parameters);
         meRequest.executeAsync();
 
@@ -104,26 +118,49 @@ public class FbProfileInfo {
                     @Override
                     public void onCompleted(JSONArray jarray,
                                             GraphResponse response) {
-                        try {
-                            JSONArray jsonArray = response.getJSONObject().getJSONArray("data");
-                            OneFragment.friendListArray.clear();
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject friendObject = jsonArray.getJSONObject(i);
 
-                                String friendName = friendObject.getString("name");
-                                String friendID = friendObject.getString("id");
-                                Log.i("FRIENDDDDdata ", friendID);
-                                friendMap.put(friendName, friendID);
-                                OneFragment.friendListArray.add(friendName);
+                        if(response.getJSONObject()!=null) {
+                            try {
+                                JSONArray jsonArray = response.getJSONObject().getJSONArray("data");
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject friendObject = jsonArray.getJSONObject(i);
+
+                                    String friendName = friendObject.getString("name");
+                                    String friendID = friendObject.getString("id");
+
+                                    Log.i("FRIENDDDDdata ", friendID);
+
+                                    friendMap.put(friendName, friendID);
+                                    //OneFragment.friendListArray.add(friendName);
+
+                                    friendList.add(new People(0, friendName));
+
+                                    //Log.d("TAG friendlist", friendList.toString());
+                                }
+
+                                friendList.add(new People(0, "Example1 Friend"));
+                                friendList.add(new People(0, "Example2 Friend"));
+                                friendList.add(new People(0, "Example3 Friend"));
+
+                                friendMap.put("Example1 Friend", utils.getUserID());
+                                friendMap.put("Example2 Friend", utils.getUserID());
+                                friendMap.put("Example3 Friend", utils.getUserID());
+
+                                utils.setFriendList(friendList);
+                                utils.setFriendMap(friendMap);
+
+                                OneFragment.friendListArray.clear();
+                                OneFragment.friendListArray.addAll(utils.getFriendList());
+
+                                //populate listview adpater with friends list
+
+                                OneFragment.newadapter.notifyDataSetChanged();
+                                ListView lv = (ListView) activityContext.findViewById(R.id.lvFriend);
+                                lv.setVisibility(View.VISIBLE);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-
-                            //populate listview adpater with friends list
-                            OneFragment.adapter.notifyDataSetChanged();
-                            ListView lv = (ListView) activityContext.findViewById(R.id.lvFriend);
-                            lv.setVisibility(View.VISIBLE);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
                     }
                 });
@@ -155,11 +192,15 @@ public class FbProfileInfo {
 
         protected void onPostExecute(Bitmap result) {
             //set image of users profile pic
-            utils.setProfilePic(new RoundImage(result));
+            //utils.setProfilePic(new RoundImage(result));
             if(AccessToken.getCurrentAccessToken()!=null){
                 ImageView pImage = (ImageView) activityContext.findViewById(R.id.profileimage);
-                pImage.setBackground(utils.getProfilePic());
-                pImage.setVisibility(View.VISIBLE);
+                //pImage.setBackground(utils.getProfilePic());
+                if (pImage!=null){
+                    pImage.setBackgroundResource(R.mipmap.fb_logo);
+                    pImage.setVisibility(View.VISIBLE);
+                }
+
             }
 
         }

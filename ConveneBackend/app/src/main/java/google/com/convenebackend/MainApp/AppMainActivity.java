@@ -5,11 +5,14 @@ package google.com.convenebackend.MainApp;
  */
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -46,6 +49,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
@@ -59,7 +63,9 @@ import google.com.convenebackend.fragments.mapsFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class AppMainActivity extends AppCompatActivity {
@@ -68,7 +74,7 @@ public class AppMainActivity extends AppCompatActivity {
     //Layout variables
     private Toolbar toolbar;
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    public ViewPager viewPager;
     private TextView info, comingSoon, orText, userName;
     private RelativeLayout userInfo;
     private Button searchContacts, backBtn, backBtn2;
@@ -77,15 +83,21 @@ public class AppMainActivity extends AppCompatActivity {
     private ImageView logo, profileImage;
     private ImageButton goBtn;
     private LinearLayout buttonWrap;
-    public static ListView lvFriend;
+    public static ListView lvFriend, notList;
     private static ArrayList friendListArray = new ArrayList();
-    public static ArrayAdapter adapter;
 
     private int[] tabIcons = {
             R.mipmap.add_friends_logo,
             R.mipmap.search_address,
             R.mipmap.convene_icon
     };
+
+    //userInfo
+    private String senderId;
+    private String friendToMeet;
+    private Map<String, String> friendMap = new HashMap<>();
+    private ArrayList notListArray = utils.getNotList();
+
     //location vars
     private GoogleApiClient mGoogleApiClient = UserUtils.getmGoogleApiClient();
     private double userLatitude = UserUtils.getUserLatitude();
@@ -95,7 +107,7 @@ public class AppMainActivity extends AppCompatActivity {
     //frag manager
     public static FragmentManager fragmentManager;
     //request codes
-    public final static int REQUEST_PLACE_PICKER =1;
+    public final static int REQUEST_PLACE_PICKER = 1;
 
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
@@ -108,14 +120,41 @@ public class AppMainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_app);
 
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        Intent intent = this.getIntent();
+        if(intent!=null) {
+            String intentId = intent.getExtras().getString("UNIQUE_ID");
+            switch (intentId) {
+                case "CONVENE_REQUEST":
+                    viewPager.setCurrentItem(2);
+
+                    String senderName = intent.getExtras().getString("FRIEND_NAME");
+                    NotificationItem notificationItem = new NotificationItem(0, senderName, "Convene Request");
+                    notListArray.add(notificationItem);
+                    Log.d("ArrayTest", notListArray.toString());
+
+                    ThreeFragment.notListArray.clear();
+                    ThreeFragment.notListArray.addAll(notListArray);
+                    utils.setNotList(notListArray);
+
+                    if( ThreeFragment.newadapter!=null){
+                        ThreeFragment.newadapter.notifyDataSetChanged();
+                    }
+                    break;
+                default:
+                    //
+            }
+        }
+
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //disable the app icon as the Up (back) button
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -139,24 +178,6 @@ public class AppMainActivity extends AppCompatActivity {
         profileImage = (ImageView) findViewById(R.id.profileimage);
         buttonWrap = (LinearLayout) findViewById(R.id.backButtonsContainer);
         userInfo = (RelativeLayout) findViewById(R.id.fbInfoContainer);
-
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_app_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
     }
 
     private void setupTabIcons() {
@@ -250,7 +271,7 @@ public class AppMainActivity extends AppCompatActivity {
 
     }
 
-    public void backToFriendListPage(View view){
+    public void backToFriendListPage(View view) {
 
         backBtn2 = (Button) findViewById(R.id.backBtnFriends);
         profileImage = (ImageView) findViewById(R.id.profileimage);
@@ -269,13 +290,13 @@ public class AppMainActivity extends AppCompatActivity {
     }
 
 
-    public void backToLogin(View layout){
+    public void backToLogin(View layout) {
         info = (TextView) findViewById(R.id.info);
         orText = (TextView) findViewById(R.id.ortext);
         searchContacts = (Button) findViewById(R.id.btnSearchContacts);
         loginButton = (LoginButton) findViewById(R.id.login_button);
         logo = (ImageView) findViewById(R.id.conveneLogo);
-        lvFriend = (ListView) findViewById(R.id.lvFriend);
+
         backBtn = (Button) findViewById(R.id.backBtn);
         profileImage = (ImageView) findViewById(R.id.profileimage);
         comingSoon = (TextView) findViewById(R.id.contactsComingSoon);
@@ -289,33 +310,96 @@ public class AppMainActivity extends AppCompatActivity {
         loginButton.setVisibility(View.VISIBLE);
         logo.setVisibility(View.VISIBLE);
 
-        if(userInfo!=null){
+        if (userInfo != null) {
             userInfo.setVisibility(View.INVISIBLE);
         }
-        if(lvFriend!=null){
-            lvFriend.setVisibility(View.INVISIBLE);
-        }
-        if(comingSoon!=null){
+
+        if (comingSoon != null) {
             comingSoon.setVisibility(View.INVISIBLE);
         }
-        if(backBtn!=null) {
+        if (backBtn != null) {
             backBtn.setVisibility(View.INVISIBLE);
         }
-        if(buttonWrap!=null) {
+        if (buttonWrap != null) {
             buttonWrap.setVisibility(View.INVISIBLE);
         }
-        if(profileImage!=null) {
+        if (profileImage != null) {
             profileImage.setVisibility(View.INVISIBLE);
+        }
+
+        lvFriend = (ListView) findViewById(R.id.lvFriend);
+        if (lvFriend != null) {
+            lvFriend.setVisibility(View.INVISIBLE);
         }
     }
 
-    public void logOutFB(View layout){
+    public void logOutFB(View layout) {
         LoginManager.getInstance().logOut();
         backToLogin(layout);
+        lvFriend = (ListView) findViewById(R.id.lvFriend);
+        //if(lvFriend!=null){
+        lvFriend.setVisibility(View.INVISIBLE);
+        //}
     }
 
+
+    public void sendRequest(View view) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        friendToMeet = utils.getFriend();
+        friendMap = utils.getFreindMap();
+
+        if (friendToMeet != null) {
+            alertDialogBuilder
+                    //set dialog message
+                    .setMessage("Do you want to meet " + friendToMeet + "?")
+                            //sets whether this dialog is cancelable with the back button
+                    .setCancelable(true)
+                    .setPositiveButton("Send Request", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // if this button is clicked: clear alert dialog
+                            dialog.cancel();
+                            OneFragment.newadapter.deselectIndex();
+                            //then send get info and send request
+                            //TODO SEND REQUEST
+                            String friendFbId = friendMap.get(friendToMeet).toString();
+                            utils.setFriend(null);
+
+                            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                                    mGoogleApiClient);
+                            if (mLastLocation != null) {
+                                utils.setmLastLocation(mLastLocation);
+
+                                userLatitude = mLastLocation.getLatitude();
+                                UserUtils.setUserLatitude(userLatitude);
+
+                                userLongitude = mLastLocation.getLongitude();
+                                UserUtils.setUserLongitude(userLongitude);
+
+                                //get UserID.
+                                senderId = utils.getUserID();
+                                new SendNotification(getApplicationContext(), friendFbId, "Convene Request",
+                                        userLatitude, userLongitude, senderId).execute();
+                            }
+                        }
+                    });
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), "Please select a friend",
+                    Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 60);
+            toast.show();
+        }
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        // show it
+        alertDialog.show();
+    } //end of sendConveneReq()*/
+
+
     //buttons/functions from Tab two
-    public void backToSearchLocation(){
+    public void backToSearchLocation() {
         ViewPagerAdapter mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         mAdapter.addFragment(new OneFragment(), "");
         mAdapter.addFragment(new TwoFragment(), "");
@@ -339,22 +423,37 @@ public class AppMainActivity extends AppCompatActivity {
         enterLocation.getText().clear();
 
         List<Address> addressList = null;
-        if(location.equals("")){
+        if (location.equals("")) {
             Toast toast = Toast.makeText(getApplicationContext(), "Please enter a valid search",
                     Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 60);
+            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 60);
             toast.show();
             return;
         }
         if (!location.equals("") || !location.equals(null)) {
             Geocoder geocoder = new Geocoder(this);
-            try {
-                addressList = geocoder.getFromLocationName(location, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
+            for(int i=0; i<3; i++){
+                try {
+                    addressList = geocoder.getFromLocationName(location, 1);
+                    if(addressList!=null){
+                        break;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            Address address = addressList.get(0);
-            latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            if(addressList!=null){
+                Address address = addressList.get(0);
+                latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            }
+            else{
+                Toast toast = Toast.makeText(getApplicationContext(), "Server Error. Please try again",
+                        Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 60);
+                toast.show();
+                return;
+            }
+
         }
         try {
             PlacePicker.IntentBuilder intentBuilder =
@@ -415,23 +514,12 @@ public class AppMainActivity extends AppCompatActivity {
 
     }
 
+}
 
-   /* public void notify(View layout){
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if(mLastLocation!=null) {
-            UserUtils.setmLastLocation(mLastLocation);
-            userLatitude = mLastLocation.getLatitude();
-            UserUtils.setUserLatitude(userLatitude);
-            userLongitude = mLastLocation.getLongitude();
-            UserUtils.setUserLongitude(userLongitude);
-        }
 
-        String friendId = "456";
-        String senderId = "123";
-        new SendNotification(getApplicationContext(),friendId,"Notification from sample app",userLatitude,userLongitude,senderId).execute();
-    }
 
+
+   /*
     public void getFriendLocation(View layout){
 
         friendLocation = (GetLocation) new GetLocation("456").execute();//pass friend id as parameter
@@ -455,5 +543,3 @@ public class AppMainActivity extends AppCompatActivity {
             Log.e("Test", e.getMessage());
         }
     }*/
-
-}

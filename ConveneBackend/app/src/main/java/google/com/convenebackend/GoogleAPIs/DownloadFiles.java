@@ -44,7 +44,7 @@ public class DownloadFiles extends AsyncTask<Double, Void, String> {
 
     @Override
     protected String doInBackground(Double... placesURL) {
-        Log.d("SIDESTART","START");
+        Log.d("SIDESTART","START" + placesURL.toString());
 
         //process search parameter string(s)
         String status="ZERO_RESULTS";
@@ -127,7 +127,7 @@ public class DownloadFiles extends AsyncTask<Double, Void, String> {
             String placeName = "";
             String vicinity = "";
             String icon="";
-            int currIcon = R.mipmap.go_button;
+            int currIcon = R.mipmap.convene_icon_nobg;
 
             //parse JSON
             JSONObject resultObject = new JSONObject(result);

@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Lydia on 05/01/2016.
@@ -15,8 +17,14 @@ import java.util.ArrayList;
 public class UserUtils {
 
     private static Drawable profiler=null;
-    private static String UserId, UserName;
+    //register users phone number to start
+    private static String UserId="000";
+    private static String UserName;
+
+    private static Map<String, String> friendMap = new HashMap<>();
     private static ArrayList friendListArray = new ArrayList();
+    private static String friendToMeet;
+    private static String friendToMeetId;
 
     private static Location mLastLocation = null;
     private static GoogleApiClient mGoogleApiClient = null;
@@ -27,7 +35,18 @@ public class UserUtils {
     private static double searchLocationLat=0;
     private static double searchLocationLon=0;
 
+    private static ArrayList<Object> notificationList = new ArrayList<>();
+
     //getter and setter methods
+    public static Map<String, String> getFreindMap(){return friendMap;}
+    public static void setFriendMap(Map newMap){friendMap=newMap;}
+
+    public static String getFreindID(){return friendToMeetId;}
+    public static void setFriendID(String newID){friendToMeetId=newID;}
+
+    public static String getFriend(){return friendToMeet;}
+    public static void setFriend(String newName){friendToMeet=newName;}
+
     public static Drawable getProfilePic(){return profiler;}
     public static void setProfilePic(Drawable newProfiler){profiler=newProfiler;}
 
@@ -62,4 +81,7 @@ public class UserUtils {
 
     public static double getSearchLon(){return searchLocationLon;}
     public static void setSearchLon(double newLon){searchLocationLon=newLon;}
+
+    public static ArrayList getNotList(){return notificationList;}
+    public static void setNotList(ArrayList newList){notificationList=newList;}
 }

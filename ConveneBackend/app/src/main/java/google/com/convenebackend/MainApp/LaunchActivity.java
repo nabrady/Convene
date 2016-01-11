@@ -22,6 +22,7 @@ public class LaunchActivity extends Activity implements
         GoogleApiClient.OnConnectionFailedListener,
         LoadingTask.LoadingTaskFinishedListener {
 
+    UserUtils utils;
     private GoogleApiClient mGoogleApiClient = UserUtils.getmGoogleApiClient();
     private double userLatitude = UserUtils.getUserLatitude();
     private double userLongitude = UserUtils.getUserLongitude();
@@ -44,6 +45,8 @@ public class LaunchActivity extends Activity implements
                 .build();
         mGoogleApiClient.connect();
         Log.d("API CLIENT", mGoogleApiClient.toString());
+
+        utils.setmGoogleApiClient(mGoogleApiClient);
     }
 
     // This is the callback for when async task has finished
@@ -59,6 +62,7 @@ public class LaunchActivity extends Activity implements
 
     private void startApp() {
         Intent intent = new Intent(LaunchActivity.this, AppMainActivity.class);
+        intent.putExtra("UNIQUE_ID", "Launch");
         startActivity(intent);
     }
 
@@ -81,7 +85,7 @@ public class LaunchActivity extends Activity implements
             userLongitude = mLastLocation.getLongitude();
             UserUtils.setUserLongitude(userLongitude);
 
-            new GcmRegistrationAsyncTask(this, "123", userLatitude, userLongitude).execute();
+            new GcmRegistrationAsyncTask(this, "000", userLatitude, userLongitude).execute();
         }
 
     }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <!--  ListRow Right sied Thumbnail image -->
+    <LinearLayout android:id="@+id/thumbnail"
+        android:layout_width="42dip"
+        android:layout_height="42dip"
+        android:padding="4dip"
+        android:paddingTop="4dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="22dip"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/list_image"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@mipmap/default_profile"
+            android:scaleType="fitXY"/>
+    </LinearLayout>
+
+    <!-- Friend Name-->
+    <TextView
+        android:id="@+id/friendName"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+        android:text=""
+        android:textColor="#303030"
+        android:typeface="sans"
+        android:textSize="20dp" />
+    <!--android:textStyle="bold"-->
+
+
+</RelativeLayout>

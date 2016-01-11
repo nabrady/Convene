@@ -1,8 +1,10 @@
 package google.com.convenebackend.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -10,14 +12,18 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -51,7 +57,6 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback, Google
     private MapView mapView;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    //private LocationRequest mLocationRequest;
     private double lat4;
     private double lon4;
     private String friend_location = utils.getSearchLocation();
@@ -61,6 +66,8 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback, Google
     private Marker[] placeMarkers;
     private Marker meet;
     private final int MAX_PLACES = 20;
+
+    public final static int REQUEST_PLACE_PICKER = 1;
 
     public static final String TAG = mapsFragment.class.getSimpleName();
     public final static String EXTRA_MESSAGE = "com.lydia.assignment_3D5.MESSAGE";
@@ -126,8 +133,6 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     public void onSearch() {
-
-        String location = friend_location;
 
         LatLng latLng = new LatLng(lat4, lon4);
         Marker friend = mMap.addMarker(new MarkerOptions()
@@ -218,36 +223,46 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback, Google
         String State = null;
         String Zipcode = null;
         String Country = null;
+        for(int i=0; i<3; i++){
+            try {
+                geocodeMatches =
+                        new Geocoder(getContext()).getFromLocation(lat4, lon4, 1);
+                if(geocodeMatches!=null){
+                    Log.d("In mapsActivity line234", "Got geocoder matches");
+                    break;
+                }
+            } catch (IOException e) {
+                Log.d("In mapsActivity line237", "Geocoder Matches probsz empty");
 
-        try {
-            geocodeMatches =
-                    new Geocoder(getActivity()).getFromLocation(lat4, lon4, 1);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                e.printStackTrace();
 
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-            alertDialog.setTitle("Alert");
-            alertDialog.setMessage("Location not recognized, try again.");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            //finish();
-                            ((AppMainActivity)getActivity()).backToSearchLocation();
-                        }
-                    });
-            alertDialog.show();
-            // create alert dialog
-
+               /* AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+                alertDialog.setTitle("Alert");
+                alertDialog.setMessage("Location not recognized, try again.");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                //finish();
+                                ((AppMainActivity)getActivity()).backToSearchLocation();
+                            }
+                        });
+                alertDialog.show();
+                // create alert dialog*/
+            }
         }
 
-        if (!geocodeMatches.isEmpty()) {
+        if (geocodeMatches!=null) {
             Address1 = geocodeMatches.get(0).getAddressLine(0);
             Address2 = geocodeMatches.get(0).getAddressLine(1);
             State = geocodeMatches.get(0).getAdminArea();
             Zipcode = geocodeMatches.get(0).getPostalCode();
             Country = geocodeMatches.get(0).getCountryName();
+        }else{
+            Toast toast = Toast.makeText(getContext(), "Server Error. Please try again",
+                    Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 60);
+            toast.show();
         }
 
         System.out.println("Address is " + Address1 + Address2 + State + Zipcode + Country);
@@ -319,6 +334,7 @@ public class mapsFragment extends Fragment implements OnMapReadyCallback, Google
         Log.d("LOC",loc.toString());
         message = locationfind(loc.latitude,loc.longitude);
     }
+
 
 }
 

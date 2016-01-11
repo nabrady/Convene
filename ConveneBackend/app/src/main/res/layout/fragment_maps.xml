@@ -24,7 +24,7 @@
             android:layout_marginLeft="-16dp"
             android:paddingBottom="50dp"
             android:textSize="7sp"
-            android:background="@color/conveneRedLight" />
+            android:background="@color/colorPrimary" />
     </RelativeLayout>
 
 </LinearLayout>

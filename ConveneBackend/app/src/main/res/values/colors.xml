@@ -16,4 +16,5 @@
     <color name="colorAccent">#9cc0fc</color>
     <color name="notifcationColor">#555555</color>
     <color name="actionBar">#9cc0fc</color>
+    <color name="redBottomBar">#999999</color>
 </resources>
