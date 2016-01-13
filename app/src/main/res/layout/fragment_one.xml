@@ -1,0 +1,234 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".AppMainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fbInfoContainer"
+        android:background="#cccccc"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_centerVertical="true"
+            android:id="@+id/userName"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:textColor="#505050"/>
+
+        <LinearLayout android:id="@+id/thumbnail2"
+            android:layout_width="40dip"
+            android:layout_height="40dip"
+            android:padding="2dip"
+            android:paddingTop="2dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="25dip"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/profileimage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/lvFriend"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:listSelector="@drawable/list_selector"
+        android:divider="#10000690"
+        android:dividerHeight="2px"
+        android:choiceMode="singleChoice"
+        android:textSize="22sp"
+        android:visibility="visible"
+        android:layout_below="@+id/fbInfoContainer"
+        tools:listitem="@layout/list_row"
+        android:layout_above="@+id/backButtonsContainer"/>
+
+    <ImageView
+        android:id="@+id/conveneLogo"
+        android:layout_alignParentTop="true"
+        android:layout_width="fill_parent"
+        android:layout_height="110dp"
+        android:layout_marginTop="22dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/convenelog"
+        android:layout_alignParentStart="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/info"
+        android:textSize="19sp"
+        android:text="With Friends"
+        android:gravity="center|center_vertical|center_horizontal"
+        android:layout_marginTop="-8dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_below="@+id/conveneLogo"
+        android:layout_centerHorizontal="true" />
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_height="35dp"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/info"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:visibility="visible"
+        android:textSize="15sp"
+        android:paddingLeft="15dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ortext"
+        android:layout_below="@+id/login_button"
+        android:textSize="18sp"
+        android:layout_margin="10dp"
+        android:text="or"
+        android:layout_centerInParent="true"
+        android:gravity="center|center_vertical|center_horizontal" />
+
+    <Button
+        android:id="@+id/btnSearchContacts"
+        android:onClick="getContacts"
+        android:textSize="16sp"
+        android:layout_below="@+id/ortext"
+        android:layout_height="35dp"
+        android:layout_width="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingRight="12dp"
+        android:background="@drawable/mybutton"
+        android:layout_centerHorizontal="true"
+        android:text="@string/search_contacts"
+        android:textColor="#ffffff"
+        android:textAllCaps="false"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/coming_soon"
+        android:id="@+id/contactsComingSoon"
+        android:visibility="invisible"
+        android:layout_alignTop="@+id/info"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/backBtn"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:text="Back"
+        android:onClick="backToLogin"
+        android:textColor="#ffffff"
+        android:textAllCaps="false"
+        android:paddingLeft="15dp"
+        android:paddingRight="12dp"
+        android:background="@drawable/mybutton"
+        android:textSize="15sp"
+        android:layout_alignTop="@+id/btnSearchContacts"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/backBtnFriends"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:text="Back"
+        android:onClick="backToFriendListPage"
+        android:textColor="#ffffff"
+        android:textAllCaps="false"
+        android:paddingLeft="15dp"
+        android:paddingRight="12dp"
+        android:background="@drawable/mybutton"
+        android:textSize="15sp"
+        android:layout_alignTop="@+id/btnSearchContacts"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_above="@+id/bottomBar"
+        android:visibility="invisible"
+        android:id="@+id/backButtonsContainer">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:background="#cccccc"
+            android:text="contacts"
+            android:onClick="getContactsFB"
+            android:textColor="#505050"
+            android:textAllCaps="false"
+            android:padding="0dp"
+            android:minHeight="42dp"/>
+
+        <View android:layout_height="fill_parent"
+            android:layout_width="2dp"
+            android:background="#B0B0B0"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:background="#cccccc"
+            android:text="log out"
+            android:onClick="logOutFB"
+            android:textColor="#505050"
+            android:textAllCaps="false"
+            android:padding="0dp"
+            android:minHeight="42dp"/>
+
+        <View android:layout_height="fill_parent"
+            android:layout_width="2dp"
+            android:background="#B0B0B0"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:background="#cccccc"
+            android:text="send"
+            android:onClick="sendRequest"
+            android:textColor="#505050"
+            android:textAllCaps="false"
+            android:padding="0dp"
+            android:minHeight="42dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/bottomBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="-16dp"
+        android:paddingBottom="50dp"
+        android:textSize="7sp"
+        android:background="@color/conveneRedLight" />
+
+</RelativeLayout>

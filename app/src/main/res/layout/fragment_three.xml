@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/conveneLogo"
+        android:layout_alignParentTop="true"
+        android:layout_width="fill_parent"
+        android:layout_height="110dp"
+        android:layout_marginTop="22dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/convenelog"
+        android:layout_alignParentStart="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="2sp"
+        android:text=""
+        android:background="@color/notifcationColor"
+        android:id="@+id/divider"
+        android:layout_below="@+id/conveneLogo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        />
+
+    <ListView
+        android:layout_below="@+id/divider"
+        android:id="@+id/notifications"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:listSelector="@drawable/list_selector"
+        android:divider="#10000690"
+        android:dividerHeight="2px"
+        android:choiceMode="singleChoice"
+        android:textSize="22sp"
+        tools:listitem="@layout/list_row"
+        android:layout_above="@+id/bottomBar"/>
+
+    <TextView
+        android:id="@+id/bottomBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="-16dp"
+        android:paddingBottom="50dp"
+        android:textSize="7sp"
+        android:background="@color/conveneRedLight" />
+
+</RelativeLayout>
