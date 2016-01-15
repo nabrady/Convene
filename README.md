@@ -45,7 +45,10 @@ the code associated with the custom markers and camera zoom levels is done in Ja
 Most of the code associated with the maps functionality is written in the mapsFragment file in the fragments folder.However the code for finding the users location is in the LaunchActivity class, as we decided finding the users location when the app is opened would save time rather than having to find it when they searched for a friends location. We decided to create a Java class called UserUtils which allows us to set the value of global variables from within any class. This is seen here using  UserUtils.setmLastLocation(mLastLocation); to set the users location, which can then be used in the AppMainActivity class. Finding the friends location on the map is done one of two ways, if the user wants to meet someone from their Facebook friends list then their friends location is retrieved from their Facebook profile in the GetLocation class, if they type in an address then it is found using the Geocder api in getLocation class in the AppMainActivity file. The equation for finding the midpoint of both locations was found online and it is done in the onSearch class in the mapsFragment file along with all the code for custom markers , zoom levels etc.
 
 3. Facebook integration.
-Integrating Facebook into our app was a big priority for us.The Facebook api allows us to access information from our own profiles and the profiles of our friends. Most of the code for this is written in the FBProfileInfo class. The app retrieves the users Facebook profile picture and sets it as their display picture in the app.
+Integrating Facebook into our app was a big priority for us.The Facebook api allows us to access information from our own profiles and the profiles of our friends. Most of the code for this is written in the FBProfileInfo class. The app retrieves the users Facebook profile picture and sets it as their display picture in the app. It also allows us to see who on our Facebook friends list has downloaded the app and logged in with Facebook. These friends are then displayed in a list view making it easy to choose from friends to meet.
+
+4. Requests and notifications.
+
 
 
 
