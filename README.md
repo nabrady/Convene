@@ -48,6 +48,7 @@ Most of the code associated with the maps functionality is written in the mapsFr
 Integrating Facebook into our app was a big priority for us.The Facebook api allows us to access information from our own profiles and the profiles of our friends. Most of the code for this is written in the FBProfileInfo class. The app retrieves the users Facebook profile picture and sets it as their display picture in the app. It also allows us to see who on our Facebook friends list has downloaded the app and logged in with Facebook. These friends are then displayed in a list view making it easy to choose from friends to meet.
 
 4. Requests and notifications.
+To meet up with someone you first need to ask them if they would like to meet up with you. In this app we did this by sending them a message via the Google cloud messaging service. A notification then appears on the users phone and when they open it they are prompted to chose whether they would like to meet up or not. Their response is then sent back to the user, again as a message via Google cloud messaging service.
 
 
 
